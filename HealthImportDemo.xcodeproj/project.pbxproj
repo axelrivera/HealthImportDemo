@@ -15,14 +15,7 @@
 		1657DCC32CE00A13005BE04E /* HealthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCC22CE00A0F005BE04E /* HealthProvider.swift */; };
 		1657DCC62CE00A77005BE04E /* Log+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCC52CE00A74005BE04E /* Log+Debug.swift */; };
 		1657DCC82CE00AAD005BE04E /* GenericError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCC72CE00AA9005BE04E /* GenericError.swift */; };
-		1657DCCA2CE00D9F005BE04E /* HealthImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCC92CE00D9B005BE04E /* HealthImporter.swift */; };
 		1657DCCD2CE00F1E005BE04E /* FitDataProtocol in Frameworks */ = {isa = PBXBuildFile; productRef = 1657DCCC2CE00F1E005BE04E /* FitDataProtocol */; };
-		1657DCD02CE0F39C005BE04E /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCCF2CE0F384005BE04E /* WorkoutViewModel.swift */; };
-		1657DCD22CE0F3D5005BE04E /* WorkoutViewModel+Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCD12CE0F3CE005BE04E /* WorkoutViewModel+Record.swift */; };
-		1657DCD42CE0F4C2005BE04E /* WorkoutViewModel+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCD32CE0F4BD005BE04E /* WorkoutViewModel+Event.swift */; };
-		1657DCD62CE0F4DE005BE04E /* WorkoutViewModel+Lap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCD52CE0F4D7005BE04E /* WorkoutViewModel+Lap.swift */; };
-		1657DCD82CE0F5B5005BE04E /* WorkoutViewModel+Health.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCD72CE0F5B0005BE04E /* WorkoutViewModel+Health.swift */; };
-		1657DCDA2CE0F6AD005BE04E /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCD92CE0F6AA005BE04E /* WorkoutType.swift */; };
 		1657DCDE2CE0F7E9005BE04E /* Calendar+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCDD2CE0F7E4005BE04E /* Calendar+Additions.swift */; };
 		1657DCE02CE0F9EE005BE04E /* FitFileProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCDF2CE0F9EA005BE04E /* FitFileProcessor.swift */; };
 		1657DCE32CE1092C005BE04E /* UTType+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DCE22CE10927005BE04E /* UTType+Additions.swift */; };
@@ -31,6 +24,10 @@
 		1657DCED2CE169B6005BE04E /* cycling_power.fit in Resources */ = {isa = PBXBuildFile; fileRef = 1657DCEB2CE169B6005BE04E /* cycling_power.fit */; };
 		1657DCEF2CE169B6005BE04E /* cycling_zwift.fit in Resources */ = {isa = PBXBuildFile; fileRef = 1657DCEC2CE169B6005BE04E /* cycling_zwift.fit */; };
 		1657DCF12CE16D3D005BE04E /* cycling.fit in Resources */ = {isa = PBXBuildFile; fileRef = 1657DCF02CE16D3D005BE04E /* cycling.fit */; };
+		1657DD102CE510F1005BE04E /* WorkoutImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DD0F2CE510D6005BE04E /* WorkoutImporter.swift */; };
+		1657DD122CE54662005BE04E /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DD112CE5465F005BE04E /* WorkoutViewModel.swift */; };
+		1657DD142CE54E81005BE04E /* WorkoutData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DD132CE54E73005BE04E /* WorkoutData.swift */; };
+		1657DD162CE565C5005BE04E /* HealthKit+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1657DD152CE565C0005BE04E /* HealthKit+Additions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,13 +40,6 @@
 		1657DCC22CE00A0F005BE04E /* HealthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProvider.swift; sourceTree = "<group>"; };
 		1657DCC52CE00A74005BE04E /* Log+Debug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Log+Debug.swift"; sourceTree = "<group>"; };
 		1657DCC72CE00AA9005BE04E /* GenericError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericError.swift; sourceTree = "<group>"; };
-		1657DCC92CE00D9B005BE04E /* HealthImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthImporter.swift; sourceTree = "<group>"; };
-		1657DCCF2CE0F384005BE04E /* WorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutViewModel.swift; sourceTree = "<group>"; };
-		1657DCD12CE0F3CE005BE04E /* WorkoutViewModel+Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorkoutViewModel+Record.swift"; sourceTree = "<group>"; };
-		1657DCD32CE0F4BD005BE04E /* WorkoutViewModel+Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorkoutViewModel+Event.swift"; sourceTree = "<group>"; };
-		1657DCD52CE0F4D7005BE04E /* WorkoutViewModel+Lap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorkoutViewModel+Lap.swift"; sourceTree = "<group>"; };
-		1657DCD72CE0F5B0005BE04E /* WorkoutViewModel+Health.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorkoutViewModel+Health.swift"; sourceTree = "<group>"; };
-		1657DCD92CE0F6AA005BE04E /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
 		1657DCDD2CE0F7E4005BE04E /* Calendar+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Additions.swift"; sourceTree = "<group>"; };
 		1657DCDF2CE0F9EA005BE04E /* FitFileProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitFileProcessor.swift; sourceTree = "<group>"; };
 		1657DCE12CE10897005BE04E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -60,6 +50,10 @@
 		1657DCEB2CE169B6005BE04E /* cycling_power.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = cycling_power.fit; sourceTree = "<group>"; };
 		1657DCEC2CE169B6005BE04E /* cycling_zwift.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = cycling_zwift.fit; sourceTree = "<group>"; };
 		1657DCF02CE16D3D005BE04E /* cycling.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = cycling.fit; sourceTree = "<group>"; };
+		1657DD0F2CE510D6005BE04E /* WorkoutImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutImporter.swift; sourceTree = "<group>"; };
+		1657DD112CE5465F005BE04E /* WorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutViewModel.swift; sourceTree = "<group>"; };
+		1657DD132CE54E73005BE04E /* WorkoutData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutData.swift; sourceTree = "<group>"; };
+		1657DD152CE565C0005BE04E /* HealthKit+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthKit+Additions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,13 +119,13 @@
 		1657DCBE2CE00885005BE04E /* Models + Data */ = {
 			isa = PBXGroup;
 			children = (
-				1657DCCE2CE0F37B005BE04E /* Workout */,
 				1657DCE52CE10B1D005BE04E /* Model.swift */,
+				1657DD132CE54E73005BE04E /* WorkoutData.swift */,
+				1657DD112CE5465F005BE04E /* WorkoutViewModel.swift */,
 				1657DCDF2CE0F9EA005BE04E /* FitFileProcessor.swift */,
-				1657DCC92CE00D9B005BE04E /* HealthImporter.swift */,
+				1657DD0F2CE510D6005BE04E /* WorkoutImporter.swift */,
 				1657DCC22CE00A0F005BE04E /* HealthProvider.swift */,
 				1657DCC02CE009D7005BE04E /* HealthStore.swift */,
-				1657DCD92CE0F6AA005BE04E /* WorkoutType.swift */,
 			);
 			path = "Models + Data";
 			sourceTree = "<group>";
@@ -147,6 +141,7 @@
 		1657DCC42CE00A61005BE04E /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				1657DD152CE565C0005BE04E /* HealthKit+Additions.swift */,
 				1657DCE72CE16214005BE04E /* TimeHelper.swift */,
 				1657DCE22CE10927005BE04E /* UTType+Additions.swift */,
 				1657DCDD2CE0F7E4005BE04E /* Calendar+Additions.swift */,
@@ -154,18 +149,6 @@
 				1657DCC52CE00A74005BE04E /* Log+Debug.swift */,
 			);
 			path = Utils;
-			sourceTree = "<group>";
-		};
-		1657DCCE2CE0F37B005BE04E /* Workout */ = {
-			isa = PBXGroup;
-			children = (
-				1657DCCF2CE0F384005BE04E /* WorkoutViewModel.swift */,
-				1657DCD12CE0F3CE005BE04E /* WorkoutViewModel+Record.swift */,
-				1657DCD32CE0F4BD005BE04E /* WorkoutViewModel+Event.swift */,
-				1657DCD52CE0F4D7005BE04E /* WorkoutViewModel+Lap.swift */,
-				1657DCD72CE0F5B0005BE04E /* WorkoutViewModel+Health.swift */,
-			);
-			path = Workout;
 			sourceTree = "<group>";
 		};
 		1657DCE92CE1698A005BE04E /* Sample Files */ = {
@@ -259,20 +242,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				1657DCE32CE1092C005BE04E /* UTType+Additions.swift in Sources */,
-				1657DCD82CE0F5B5005BE04E /* WorkoutViewModel+Health.swift in Sources */,
-				1657DCD62CE0F4DE005BE04E /* WorkoutViewModel+Lap.swift in Sources */,
-				1657DCD02CE0F39C005BE04E /* WorkoutViewModel.swift in Sources */,
+				1657DD122CE54662005BE04E /* WorkoutViewModel.swift in Sources */,
+				1657DD162CE565C5005BE04E /* HealthKit+Additions.swift in Sources */,
 				1657DCE82CE16218005BE04E /* TimeHelper.swift in Sources */,
 				1657DCE02CE0F9EE005BE04E /* FitFileProcessor.swift in Sources */,
-				1657DCD42CE0F4C2005BE04E /* WorkoutViewModel+Event.swift in Sources */,
-				1657DCDA2CE0F6AD005BE04E /* WorkoutType.swift in Sources */,
 				1657DCC82CE00AAD005BE04E /* GenericError.swift in Sources */,
 				1657DCE62CE10B20005BE04E /* Model.swift in Sources */,
-				1657DCD22CE0F3D5005BE04E /* WorkoutViewModel+Record.swift in Sources */,
+				1657DD142CE54E81005BE04E /* WorkoutData.swift in Sources */,
 				1657DCC32CE00A13005BE04E /* HealthProvider.swift in Sources */,
 				1657DCB92CE00841005BE04E /* ContentView.swift in Sources */,
-				1657DCCA2CE00D9F005BE04E /* HealthImporter.swift in Sources */,
 				1657DCC62CE00A77005BE04E /* Log+Debug.swift in Sources */,
+				1657DD102CE510F1005BE04E /* WorkoutImporter.swift in Sources */,
 				1657DCC12CE009DA005BE04E /* HealthStore.swift in Sources */,
 				1657DCDE2CE0F7E9005BE04E /* Calendar+Additions.swift in Sources */,
 				1657DCBA2CE00841005BE04E /* HealthImportDemoApp.swift in Sources */,

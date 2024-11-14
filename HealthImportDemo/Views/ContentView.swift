@@ -20,28 +20,27 @@ struct ContentView: View {
     @State private var isShowingError = false
     
     var isReady: Bool {
-        model.viewModel != nil
+        model.viewModel != nil || model.workoutData != nil
     }
     
     var body: some View {
         NavigationStack {
-            Form {
+            List {
                 if let viewModel = model.viewModel {
-                    metricsSection(viewModel)
-                    recordsSection(viewModel)
-                    
-                    Section {
-                        Map(interactionModes: []) {
-                            if !model.coordinates.isEmpty {
+                    if !model.coordinates.isEmpty {
+                        Section {
+                            Map(interactionModes: []) {
                                 MapPolyline(coordinates: model.coordinates)
                                     .stroke(.blue, lineWidth: 4)
                             }
+                            .frame(height: 250)
+                            .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                         }
-                        .frame(height: 250)
-                        .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    } header: {
-                        Text("Route")
                     }
+                    
+                    metricsSection(viewModel)
+                } else if let workoutData = model.workoutData {
+                    fileSection(workoutData)
                 }
             }
             .overlay {
@@ -54,17 +53,14 @@ struct ContentView: View {
                     hudView()
                 }
             }
+            .listStyle(.plain)
             .navigationTitle("Health Import Demo")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                if isReady {
+                if let _ = model.viewModel {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Reset", role: .destructive, action: reset)
                             .tint(.red)
-                    }
-                    
-                    ToolbarItem(placement: .primaryAction) {
-                        Button("Save", action: { isShowingImportConfirmation.toggle() })
                     }
                 }
             }
@@ -90,26 +86,60 @@ struct ContentView: View {
     }
     
     @ViewBuilder
+    func fileSection(_ workoutData: WorkoutData) -> some View {
+        Section {
+            row("Sport", detail: workoutData.sport)
+            
+            if let startDate = workoutData.startDate {
+                row("Date", detail: dateString(startDate))
+                row("Time", detail: timeString(startDate))
+            }
+            
+            if let duration = workoutData.duration {
+                row("Duration", detail: timerString(duration))
+            }
+            
+            if let distance = workoutData.distance {
+                row("Distance", detail: distanceString(distance))
+            }
+            
+            row("Total Records", detail: workoutData.totalRecords.formatted())
+        } header: {
+            Text("File Details")
+        } footer: {
+            Button(action: save) {
+                Text("Save to Apple Health")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .padding(.vertical, 10)
+            .listRowSeparator(.hidden, edges: .bottom)
+        }
+    }
+    
+    @ViewBuilder
     func metricsSection(_ viewModel: WorkoutViewModel) -> some View {
         Section {
             VStack(alignment: .leading) {
-                Text(dateString(viewModel.start))
-                Text("\(timeString(viewModel.start)) - \(timeString(viewModel.end))")
+                Text(dateString(viewModel.startDate))
+                Text("\(timeString(viewModel.startDate)) - \(timeString(viewModel.endDate))")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
             
-            row("Total Time", detail: timerString(viewModel.elapsedTime))
+            row("Total Time", detail: timerString(viewModel.totalDuration))
             
-            if let movingTime = viewModel.totalMovingTime {
-                row("Moving Time", detail: timerString(movingTime))
+            if viewModel.duration.value > 0 {
+                row("Moving Time", detail: timerString(viewModel.duration))
             }
             
             if let distance = viewModel.distance {
                 row("Distance", detail: distanceString(distance))
             }
             
-            if let elevationAscended = viewModel.elevationAscended {
+            if let elevationAscended = viewModel.elevation {
                 row("Elevation Ascended", detail: elevationString(elevationAscended))
             }
             
@@ -121,30 +151,19 @@ struct ContentView: View {
                 row("Avg HR", detail: heartRateString(heartRate))
             }
             
-            if let calories = viewModel.activeCalories {
+            if let calories = viewModel.totalEnergy {
                 row("Active Calories", detail: energyString(calories))
             }
 
-            if let cadence = viewModel.avgCyclingCadence {
+            if let cadence = viewModel.avgCadence {
                 row("Avg Cadence", detail: cadenceString(cadence))
             }
             
-            if let power = viewModel.avgCyclingPower {
+            if let power = viewModel.avgPower {
                 row("Avg Power", detail: powerString(power))
             }
         } header: {
             Text("Details")
-        }
-    }
-    
-    @ViewBuilder
-    func recordsSection(_ viewModel: WorkoutViewModel) -> some View {
-        Section {
-            row("Total Records", detail: viewModel.records.count.formatted())
-            row("Total Laps", detail: viewModel.laps.count.formatted())
-            row("Total Events", detail: viewModel.events.count.formatted())
-        } header: {
-            Text("Samples")
         }
     }
     
@@ -184,10 +203,6 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
                     .padding(.top)
             }
-            
-            
-            
-            
         }
         .padding(.horizontal)
     }
@@ -231,7 +246,6 @@ extension ContentView {
                 
                 withAnimation {
                     isSavingToHealth = false
-                    model.reset()
                 }
             } catch {
                 withAnimation {
@@ -244,7 +258,7 @@ extension ContentView {
     
     func reset() {
         withAnimation {
-            model.reset()
+            model.resetWorkout()
         }
     }
     
@@ -346,7 +360,7 @@ extension ContentView {
 }
 
 #Preview {
-    @Previewable @State var model: Model = .filePreview(nil)
+    @Previewable @State var model: Model = .filePreview(.cycling, loadViewModel: false)
     
     ContentView()
         .environment(model)

@@ -7,6 +7,7 @@
 
 import Foundation
 import HealthKit
+import CoreLocation
 
 final class HealthProvider: Sendable {
     let healthStore: HKHealthStore
@@ -72,71 +73,95 @@ extension HealthProvider {
     
 }
 
-extension HKQuantityType {
+// MARK: Workouts
+
+extension HealthProvider {
     
-    // MARK: Distance
+    func fetchWorkout(with uuid: UUID) async throws -> HKWorkout {
+        return try await withCheckedThrowingContinuation { continuation in
+            let predicate = HKQuery.predicateForObject(with: uuid)
+            let workoutType = HKObjectType.workoutType()
+            
+            let query = HKSampleQuery(sampleType: workoutType, predicate: predicate, limit: 1, sortDescriptors: nil) { query, results, error in
+                if let workout = results?.first as? HKWorkout {
+                    continuation.resume(returning: workout)
+                } else {
+                    continuation.resume(throwing: error ?? GenericError("workout not found"))
+                }
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+}
+
+// MARK: Routes
+
+extension HealthProvider {
+    
+    func fetchWorkourRoute(for uuid: UUID) async throws -> [CLLocation] {
+        let workout = try await fetchWorkout(with: uuid)
+        return try await fetchWorkoutRoute(for: workout)
+    }
+    
+    func fetchWorkoutRoute(for workout: HKWorkout) async throws -> [CLLocation] {
+        let routeSamples = try await fetchWorkoutRouteSamples(for: workout)
+        return try await fetchLocations(from: routeSamples)
+    }
+
+    private func fetchWorkoutRouteSamples(for workout: HKWorkout) async throws -> [HKWorkoutRoute] {
+        let predicate = HKQuery.predicateForObjects(from: workout)
+        let workoutRouteType = HKSeriesType.workoutRoute()
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let routeQuery = HKSampleQuery(sampleType: workoutRouteType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { query, results, error in
+                if let routeSamples = results as? [HKWorkoutRoute] {
+                    continuation.resume(returning: routeSamples)
+                } else {
+                    continuation.resume(throwing: error ?? GenericError("route error"))
+                }
+            }
+
+            self.healthStore.execute(routeQuery)
+        }
+    }
+
+    private func fetchLocations(from routeSamples: [HKWorkoutRoute]) async throws -> [CLLocation] {
+        var allLocations: [CLLocation] = []
         
-    static func distanceCycling() -> HKQuantityType {
-        .init(.distanceCycling)
-    }
-    
-    // MARK: Other Types
-    
-    static func cyclingCadence() -> HKQuantityType {
-        HKQuantityType(.cyclingCadence)
-    }
-    
-    static func heartRate() -> HKQuantityType {
-        HKQuantityType(.heartRate)
-    }
-    
-    static func activeEnergyBurned() -> HKQuantityType {
-        HKQuantityType(.activeEnergyBurned)
-    }
-    
-    static func cyclingPower() -> HKQuantityType {
-        HKQuantityType(.cyclingPower)
-    }
-    
-}
+        for route in routeSamples {
+            do {
+                for try await locations in self.fetchLocations(for: route) {
+                    allLocations.append(contentsOf: locations)
+                }
+            } catch {
+                dLog("error fetching route locations: \(error)")
+            }
+        }
 
-extension HKQuantity {
-    
-    func defaultDistanceValue() -> Double {
-        doubleValue(for: .meter())
+        return allLocations
     }
     
-    func defaultEnergyValue() -> Double {
-        doubleValue(for: .kilocalorie())
-    }
-    
-}
+    private func fetchLocations(for route: HKWorkoutRoute) -> AsyncThrowingStream<[CLLocation], Error> {
+        AsyncThrowingStream { continuation in
+            let routeQuery = HKWorkoutRouteQuery(route: route) { query, newLocations, done, error in
+                if let error = error {
+                    continuation.finish(throwing: error)
+                    return
+                }
 
-extension HKQuantity {
-    
-    static func quantity(for value: Double?, unit: HKUnit) -> HKQuantity? {
-        guard let value = value else { return nil }
-        return HKQuantity(unit: unit, doubleValue: value)
-    }
-    
-}
+                if let newLocations = newLocations {
+                    continuation.yield(newLocations)
+                }
 
-extension HKUnit {
-    
-    static func bpm() -> HKUnit {
-        HKUnit.count().unitDivided(by: HKUnit.minute())
-    }
-    
-    static func rpm() -> HKUnit {
-        HKUnit.count().unitDivided(by: .minute())
-    }
-    
-    static func celcius() -> HKUnit {
-        HKUnit.degreeCelsius()
-    }
-    
-    static func metersPerSecond() -> HKUnit {
-        HKUnit.meter().unitDivided(by: .second())
+                if done {
+                    continuation.finish()
+                }
+            }
+
+            self.healthStore.execute(routeQuery)
+        }
     }
     
 }

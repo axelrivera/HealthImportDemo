@@ -6,7 +6,10 @@
 //
 
 import SwiftUI
+import HealthKit
 import CoreLocation
+import FitDataProtocol
+import AntMessageProtocol
 
 struct SampleFile: RawRepresentable {
     var rawValue: String
@@ -34,13 +37,23 @@ class Model {
     private let fileProcessor = FitFileProcessor()
     private let healthProvider = HealthProvider()
     
+    var workoutData: WorkoutData?
+    var fileSport: String?
+    var fileSubSport: String?
+    var fileDate: Date?
+    var fileTotalRecords: Int?
+    
     var viewModel: WorkoutViewModel?
     var coordinates: [CLLocationCoordinate2D] = []
     
-    init(viewModel: WorkoutViewModel? = nil) {
+    init(workoutData: WorkoutData? = nil, loadViewModel: Bool = true) {
 #if DEBUG
-        self.viewModel = viewModel
-        self.coordinates = viewModel?.route.map(\.coordinate) ?? []
+        if loadViewModel, let workoutData {
+            self.viewModel = workoutData.workoutViewModel
+            self.coordinates = workoutData.coordinates
+        } else {
+            self.workoutData = workoutData
+        }
 #endif
     }
 }
@@ -81,25 +94,37 @@ extension Model {
     }
     
     func processData(_ data: Data) async throws {
-        let viewModel = try fileProcessor.decode(data: data)
-        updateValues(forViewModel: viewModel)
-    }
-    
-    func updateValues(forViewModel viewModel: WorkoutViewModel) {
-        self.viewModel = viewModel
-        self.coordinates = viewModel.route.map(\.coordinate)
+        let workoutData = try fileProcessor.decode(data: data)
+        self.workoutData = workoutData
     }
     
     func saveToHealth() async throws {
-        guard let viewModel else {
+        guard let workoutData else {
             throw GenericError("workout cannot be empty")
         }
         
-        let importer = HealthImporter()
-        try await importer.saveWorkout(viewModel)
+        let importer = WorkoutImporter()
+        let workoutID = try await importer.process(data: workoutData)
+        
+        let workout = try await healthProvider.fetchWorkout(with: workoutID)
+        let locations = try await healthProvider.fetchWorkourRoute(for: workoutID)
+        
+        let viewModel = WorkoutViewModel.viewModel(for: workout)
+        let coordinates = locations.map(\.coordinate)
+        
+        resetFile()
+        self.viewModel = viewModel
+        self.coordinates = coordinates
     }
     
-    func reset() {
+    func resetFile() {
+        self.workoutData = nil
+        self.fileSport = nil
+        self.fileDate = nil
+        self.fileTotalRecords = nil
+    }
+    
+    func resetWorkout() {
         self.viewModel = nil
         self.coordinates = []
     }
@@ -112,14 +137,14 @@ extension Model {
         filePreview(.cycling)
     }
     
-    static func filePreview(_ file: SampleFile? = .cycling) -> Model {
+    static func filePreview(_ file: SampleFile? = .cycling, loadViewModel: Bool = true) -> Model {
         if let file {
             let processor = FitFileProcessor()
             let data = try! file.data()
-            let result = try! processor.decode(data: data)
-            return Model(viewModel: result)
+            let workoutData = try! processor.decode(data: data)
+            return Model(workoutData: workoutData, loadViewModel: loadViewModel)
         } else {
-            return Model(viewModel: nil)
+            return Model()
         }
     }
     
