@@ -54,6 +54,7 @@
 		1657DD112CE5465F005BE04E /* WorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutViewModel.swift; sourceTree = "<group>"; };
 		1657DD132CE54E73005BE04E /* WorkoutData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutData.swift; sourceTree = "<group>"; };
 		1657DD152CE565C0005BE04E /* HealthKit+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthKit+Additions.swift"; sourceTree = "<group>"; };
+		1657DD172CE64801005BE04E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				1657DCB82CE00841005BE04E /* HealthImportDemo */,
+				1657DD172CE64801005BE04E /* README.md */,
 				1657DCA32CE0082F005BE04E /* Products */,
 			);
 			sourceTree = "<group>";
