@@ -44,46 +44,61 @@ extension WorkoutImporter {
 private extension WorkoutImporter {
     
     func saveToHealth() async throws -> UUID {
+        // all workouts must have a start time and duration
         guard let startDate = session.startTime?.recordDate, let elapsedTime = session.totalElapsedTime else {
             throw WorkoutImporterError.invalidData
         }
         
+        // Map the Sport property in the FIT file to HKWorkoutActivityType
+        // Or throw an error if an activity type is not supported
         guard let activityType = activityType() else {
             throw WorkoutImporterError.activityNotSupported
         }
         
-        let elapsedTimeInSeconds = elapsedTime.converted(to: .seconds).value
-        let endDate = startDate.addingTimeInterval(elapsedTimeInSeconds)
-        
+        // A workout is indoor if the subSport is spinning, indoor cycling or virtual activity (i.e. Zwift)
         let subSport = session.subSport
         let isIndoor = isIndoor(subSport: subSport)
         
+        // 1. Create Configuration
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = activityType
         configuration.locationType = isIndoor  ? .indoor : .outdoor
         
+        // 2. Create Builder
         let builder = HKWorkoutBuilder(healthStore: healthStore, configuration: configuration, device: .local())
+        
+        // 3. Begin Collecting Data
         try await builder.beginCollection(at: startDate)
         
+        // 4. Add Metadata
         let metadata = try self.metadata(from: session)
         try await builder.addMetadata(metadata)
         
+        // 5. Add Events
+        // The app will crash if you try to add empty values to the builder
         let events = generateWorkoutEvents()
         if !events.isEmpty {
             try await builder.addWorkoutEvents(events)
         }
         
+        // 6. Add Samples
         let samples = generateWorkoutSamples()
         if !samples.isEmpty {
             try await builder.addSamples(samples)
         }
         
+        // 7. End Collecting Data
+        // FIT files don't include an end data so we need to calculate it from the elapsed time
+        let elapsedTimeInSeconds = elapsedTime.converted(to: .seconds).value
+        let endDate = startDate.addingTimeInterval(elapsedTimeInSeconds)
         try await builder.endCollection(at: endDate)
         
+        // 8. Finish the Workout
         guard let workout = try await builder.finishWorkout() else {
             throw WorkoutImporterError.saveFailed
         }
         
+        // 9. Generate and save a route if needed
         let locations = generateLocations()
         
         // Route processing is ignored if the activity is virtual or indoor
@@ -137,6 +152,8 @@ private extension WorkoutImporter {
     func generateWorkoutEvents() -> [HKWorkoutEvent] {
         var workoutEvents: [HKWorkoutEvent] = []
         
+        // We only care about start and stop events in the FIT file to map them to their corresponding
+        // resume or pause events in HealthKit
         for event in events {
             guard let timestamp = event.timeStamp?.recordDate else { continue }
             
@@ -151,10 +168,16 @@ private extension WorkoutImporter {
             }
         }
         
+        // cleaning the first and last events to make sure they are valid
+        // the app will crash if the events are not in order following sequences
+        // of pause, resume, pause, resume, etc...
+        
+        // the first event cannot be resume
         if let first = workoutEvents.first, first.type == .resume {
             workoutEvents = Array(workoutEvents.dropFirst())
         }
         
+        // the last event cannot be a pause
         if let last = workoutEvents.last, last.type == .pause {
             workoutEvents = Array(workoutEvents.dropLast())
         }
@@ -222,6 +245,8 @@ private extension WorkoutImporter {
         )
     }
     
+    // Convenience method to reuse the logic for cumulative samples
+    
     func createCumulativeQuantitySample<T: Dimension>(
         start: RecordMessage,
         end: RecordMessage,
@@ -237,7 +262,9 @@ private extension WorkoutImporter {
 
         let startValue = startMeasurement.converted(to: conversionUnit).value
         let endValue = endMeasurement.converted(to: conversionUnit).value
-
+        
+        // FIT files include the total cummulative value in each record
+        // but samples in HealthKit expects fractional values as they increase
         let value = endValue - startValue
         guard value > 0 else { return nil }
 
@@ -274,6 +301,10 @@ private extension WorkoutImporter {
         )
     }
     
+    // Convenience method to reuse the logic for discrete samples
+    // Note that it handles cadence as an edge case since it requires
+    // 2 properties to calculate the full cadence
+    
     func createDiscreteQuantity<T: Unit>(
         record: RecordMessage,
         keyPath: KeyPath<RecordMessage, Measurement<T>?>,
@@ -283,6 +314,9 @@ private extension WorkoutImporter {
         guard let date = record.timeStamp?.recordDate else { return nil }
         guard let measurement = record[keyPath: keyPath] else { return nil }
         
+        // NOTE ABOUNT CADENCE:
+        // cadence samples use two properties in FIT files due to number constraints
+        // the total cadence is the sum of the cadence and fractional cadence properties in the FIT file
         let value: Double
         if keyPath == \.cadence {
             let fractionalCadence = record.fractionalCadence ?? .init(value: 0, unit: .revolutionsPerMinute)
