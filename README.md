@@ -1,4 +1,4 @@
-# Health Import Demo App
+# Apple Health Import Demo App
 
 A demo app showing how to read a FIT file and save a cycling workout to HealthKit.
 
