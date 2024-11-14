@@ -9,7 +9,7 @@ The demo app will:
 
 1. Read a FIT file from a sample file or Files app
 2. Parse the FIT file using [FitDataProtocol](https://github.com/FitnessKit/FitDataProtocol)
-3. Save the the workout data to HealthKit
+3. Save the workout data to HealthKit
 4. Read the workout from Apple Health and show some details and route
 
 ![Demo Screenshot](screenshot.jpg)
