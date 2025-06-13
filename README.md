@@ -3,7 +3,7 @@
 A demo app showing how to read a FIT file and save a cycling workout to HealthKit.
 
 > [!TIP]
-> Check out the full blog post on my website: [How to import a FIT File to HealthKit](https://riveralabs.com/blog/how-to-import-a-fit-file-to-healthkit)
+> Check out the full blog post on my website: [How to import a FIT File to HealthKit](https://www.riveralabs.com/blog/fit-file-healthkit/)
 
 The demo app will:
 
